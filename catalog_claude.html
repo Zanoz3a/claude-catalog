@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Каталог — ЗЕРНО, плёночная лаборатория</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #17130f;
+    --bg-card: #221c17;
+    --bg-card-hover: #29221b;
+    --paper: #f2ede4;
+    --paper-dim: #b9ada0;
+    --amber: #e8961e;
+    --amber-dim: #a86c1c;
+    --sage: #6b8f71;
+    --rust: #c1512f;
+    --line: rgba(242,237,228,0.10);
+    --line-strong: rgba(242,237,228,0.18);
+    --radius: 14px;
+    --font-display: 'Oswald', sans-serif;
+    --font-body: 'Source Serif 4', serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--paper);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* film grain overlay across whole section */
+  .catalog{
+    position: relative;
+    padding: 96px 6vw 110px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .catalog::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index: 0;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    pointer-events:none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/></svg>");
+  }
+
+  .catalog__inner{ position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  .catalog__head{
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 40px;
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 40px;
+  }
+
+  .catalog__eyebrow{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--amber);
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    margin: 0 0 18px;
+  }
+  .catalog__eyebrow::before{
+    content:"";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 0 3px rgba(232,150,30,0.18);
+  }
+
+  .catalog__title{
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    font-size: clamp(34px, 4.2vw, 52px);
+    line-height: 1.05;
+    margin: 0 0 16px;
+    max-width: 620px;
+  }
+
+  .catalog__intro{
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--paper-dim);
+    max-width: 480px;
+    margin: 0;
+  }
+
+  .catalog__head-left{ flex: 1 1 420px; }
+
+  /* filter chips (radio-driven, no JS) */
+  .filters{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex: 0 0 auto;
+  }
+  .filters input{
+    position:absolute;
+    opacity:0;
+    width:0; height:0;
+  }
+  .filters label{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: var(--paper-dim);
+    cursor: pointer;
+    transition: border-color .18s ease, color .18s ease, background .18s ease;
+    white-space: nowrap;
+  }
+  .filters label:hover{ color: var(--paper); border-color: var(--paper-dim); }
+  .filters input:checked + label{
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #1a1409;
+    font-weight: 500;
+  }
+
+  /* ---------- grid ---------- */
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+
+  /* ---------- card ---------- */
+  .card{
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    transition: transform .25s ease, border-color .25s ease, background .25s ease, box-shadow .25s ease;
+  }
+  .card:hover{
+    transform: translateY(-6px);
+    border-color: var(--line-strong);
+    background: var(--bg-card-hover);
+    box-shadow: 0 22px 40px -18px rgba(0,0,0,0.6);
+  }
+
+  /* sprocket / perforation strip */
+  .card__sprockets{
+    display:flex;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.28), transparent);
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .card__sprockets span{
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--bg);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .card__sprockets--bottom{
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: linear-gradient(0deg, rgba(0,0,0,0.28), transparent);
+    margin-top: 4px;
+  }
+
+  /* canister visual */
+  .card__canister{
+    position: relative;
+    margin: 0 16px;
+    height: 128px;
+    border-radius: 8px 8px 4px 4px;
+    background:
+      linear-gradient(155deg, var(--cap) 0%, color-mix(in srgb, var(--cap) 60%, black) 100%);
+    overflow: hidden;
+  }
+  .card__canister::before{
+    /* label plate */
+    content: attr(data-format);
+    position:absolute;
+    left: 12px; bottom: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: rgba(0,0,0,0.55);
+    background: rgba(242,237,228,0.75);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+  .card__canister::after{
+    /* light leak sweep */
+    content:"";
+    position: absolute;
+    top: -40%; left: -60%;
+    width: 60%; height: 180%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.55), transparent);
+    transform: translateX(-40%) rotate(12deg);
+    opacity: 0;
+    transition: opacity .35s ease, transform .6s ease;
+  }
+  .card:hover .card__canister::after{
+    opacity: 0.9;
+    transform: translateX(220%) rotate(12deg);
+  }
+
+  .card__badge{
+    position: absolute;
+    top: 10px; right: 10px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: rgba(23,19,15,0.55);
+    color: var(--paper);
+    border: 1px solid rgba(242,237,228,0.3);
+    z-index: 2;
+  }
+  .card__badge--expired{
+    background: var(--rust);
+    border-color: var(--rust);
+    color: #1a0f0a;
+  }
+
+  .card__body{
+    padding: 20px 18px 22px;
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+  }
+
+  .card__name{
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+
+  .card__type{
+    font-size: 14.5px;
+    color: var(--paper-dim);
+    margin: -6px 0 0;
+    font-style: italic;
+  }
+
+  .card__specs{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--paper-dim);
+    padding: 10px 0;
+    border-top: 1px dashed var(--line-strong);
+    border-bottom: 1px dashed var(--line-strong);
+  }
+  .card__specs span b{ color: var(--paper); font-weight: 500; }
+
+  .card__footer{
+    margin-top: auto;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 4px;
+  }
+
+  .card__price{
+    font-family: var(--font-display);
+    font-size: 19px;
+    letter-spacing: 0.01em;
+  }
+  .card__price small{
+    display:block;
+    font-family: var(--font-body);
+    font-size: 11.5px;
+    color: var(--paper-dim);
+    font-style: italic;
+  }
+
+  .btn{
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    background: transparent;
+    color: var(--paper);
+    border: 1px solid var(--paper-dim);
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .18s ease, color .18s ease, border-color .18s ease, transform .12s ease;
+  }
+  .btn:hover{
+    background: var(--amber);
+    border-color: var(--amber);
+    color: #1a1409;
+  }
+  .btn:active{ transform: scale(0.96); }
+  .btn:focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 3px;
+  }
+  .filters label:focus-visible{
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+  }
+
+  /* footer link */
+  .catalog__more{
+    display:flex;
+    justify-content:center;
+    margin-top: 52px;
+  }
+  .catalog__more a{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.05em;
+    color: var(--amber);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color .18s ease;
+  }
+  .catalog__more a:hover{ border-color: var(--amber); }
+
+  @media (prefers-reduced-motion: reduce){
+    .card, .card__canister::after{ transition: none; }
+  }
+
+  /* ---------- tablet ---------- */
+  @media (max-width: 1100px){
+    .grid{ grid-template-columns: repeat(2, 1fr); }
+    .catalog{ padding: 76px 5vw 90px; }
+    .catalog__head{ align-items: flex-start; }
+  }
+
+  /* ---------- mobile ---------- */
+  @media (max-width: 680px){
+    .catalog{ padding: 56px 5vw 70px; }
+    .catalog__head{
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 40px;
+      padding-bottom: 28px;
+    }
+    .filters{
+      width: 100%;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .filters::-webkit-scrollbar{ display:none; }
+    .grid{ grid-template-columns: 1fr; gap: 20px; }
+    .catalog__title{ font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="catalog">
+  <div class="catalog__inner">
+
+    <div class="catalog__head">
+      <div class="catalog__head-left">
+        <p class="catalog__eyebrow">Каталог · плёнка в наличии</p>
+        <h2 class="catalog__title">Зерно на свету</h2>
+        <p class="catalog__intro">Восемь плёнок, которые мы сами проявляем и тестируем перед тем, как поставить на полку. Цветная, чёрно-белая, слайдовая — и пара катушек с истёкшим сроком, для тех, кто любит непредсказуемость.</p>
+      </div>
+
+      <form class="filters" onsubmit="return false;">
+        <input type="radio" name="format" id="f-all" checked>
+        <label for="f-all">Все</label>
+
+        <input type="radio" name="format" id="f-35">
+        <label for="f-35">35 мм</label>
+
+        <input type="radio" name="format" id="f-120">
+        <label for="f-120">120</label>
+
+        <input type="radio" name="format" id="f-exp">
+        <label for="f-exp">Просрочка</label>
+      </form>
+    </div>
+
+    <div class="grid">
+
+      <!-- 1 -->
+      <article class="card">
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#caa46b" data-format="35 мм"></div>
+        <div class="card__body">
+          <h3 class="card__name">Grain 400 Colour</h3>
+          <p class="card__type">Цветная негативная</p>
+          <div class="card__specs">
+            <span>ISO <b>400</b></span>
+            <span>Кадров <b>36</b></span>
+            <span>Баланс <b>дневной</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">890 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+      <!-- 2 -->
+      <article class="card">
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#8b8b86" data-format="35 мм"></div>
+        <div class="card__body">
+          <h3 class="card__name">Halide Mono 100</h3>
+          <p class="card__type">Чёрно-белая, мелкое зерно</p>
+          <div class="card__specs">
+            <span>ISO <b>100</b></span>
+            <span>Кадров <b>36</b></span>
+            <span>Контраст <b>средний</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">760 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+      <!-- 3 -->
+      <article class="card">
+        <span class="card__badge">хит</span>
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#3a3a3a" data-format="35 мм"></div>
+        <div class="card__body">
+          <h3 class="card__name">Nightframe 3200</h3>
+          <p class="card__type">Чёрно-белая, репортажная</p>
+          <div class="card__specs">
+            <span>ISO <b>3200</b></span>
+            <span>Кадров <b>24</b></span>
+            <span>Пуш <b>до 6400</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">1 090 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+      <!-- 4 -->
+      <article class="card">
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#2f6b57" data-format="35 мм"></div>
+        <div class="card__body">
+          <h3 class="card__name">Amber Slide 50</h3>
+          <p class="card__type">Обращаемая (слайд)</p>
+          <div class="card__specs">
+            <span>ISO <b>50</b></span>
+            <span>Кадров <b>36</b></span>
+            <span>Цвет <b>насыщенный</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">1 340 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+      <!-- 5 -->
+      <article class="card">
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#d9b39a" data-format="35 мм"></div>
+        <div class="card__body">
+          <h3 class="card__name">Coastline 200</h3>
+          <p class="card__type">Цветная, пастельные тона</p>
+          <div class="card__specs">
+            <span>ISO <b>200</b></span>
+            <span>Кадров <b>36</b></span>
+            <span>Баланс <b>дневной</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">830 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+      <!-- 6 -->
+      <article class="card">
+        <span class="card__badge card__badge--expired">просрочка · 1998</span>
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#c1512f" data-format="35 мм"></div>
+        <div class="card__body">
+          <h3 class="card__name">Redline Expired '98</h3>
+          <p class="card__type">Цветная, непредсказуемый сдвиг</p>
+          <div class="card__specs">
+            <span>ISO <b>200</b></span>
+            <span>Рекоменд. <b>push 400</b></span>
+            <span>Партия <b>ограничена</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">560 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+      <!-- 7 -->
+      <article class="card">
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#e2b6a1" data-format="35 мм"></div>
+        <div class="card__body">
+          <h3 class="card__name">Skin Tone 160</h3>
+          <p class="card__type">Цветная, портретная</p>
+          <div class="card__specs">
+            <span>ISO <b>160</b></span>
+            <span>Кадров <b>36</b></span>
+            <span>Оттенок <b>тёплый</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">970 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+      <!-- 8 -->
+      <article class="card">
+        <div class="card__sprockets">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="card__canister" style="--cap:#6b6b62" data-format="120"></div>
+        <div class="card__body">
+          <h3 class="card__name">Wide Format Pan</h3>
+          <p class="card__type">Панхроматическая ч/б, средний формат</p>
+          <div class="card__specs">
+            <span>ISO <b>125</b></span>
+            <span>Кадров <b>12</b></span>
+            <span>Формат <b>6×6 / 6×9</b></span>
+          </div>
+          <div class="card__footer">
+            <div class="card__price">1 180 ₽<small>за катушку</small></div>
+            <button class="btn">В корзину</button>
+          </div>
+        </div>
+        <div class="card__sprockets card__sprockets--bottom">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="catalog__more">
+      <a href="#">Показать весь каталог →</a>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
